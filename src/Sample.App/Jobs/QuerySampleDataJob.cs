@@ -20,12 +20,12 @@ public class QuerySampleDataJob : JobBase
     {
         var students = await Context.Students
             .Include(x => x.Courses)
-            .Select(x => new
+            .Select(student => new
             {
-                Name = x.Name,
-                Courses = x.Courses.Select(x => new
+                Name = student.Name,
+                Courses = student.Courses.Select(course => new
                 {
-                    Title = x.Title,
+                    Title = course.Title,
                 }),
             }).ToListAsync();
 
