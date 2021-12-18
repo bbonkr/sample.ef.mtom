@@ -57,6 +57,37 @@ No change
 
 ### .NET 6
 
+Remove EnrollmentEntityTypeConfiguration class, configure in course entity type configuration
+
+```csharp
+public class CourseEntityTypeConfiguration : IEntityTypeConfiguration<Course>
+{
+    public void Configure(EntityTypeBuilder<Course> builder)
+    {
+        builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.Id)
+            .IsRequired()
+            .ValueGeneratedOnAdd();
+
+        builder.Property(x => x.Title)
+            .IsRequired();
+
+        builder.HasMany(x => x.Students)
+            .WithMany(x => x.Courses)
+            .UsingEntity<Enrollment>(
+                j => j.HasOne(x => x.Student).WithMany(x => x.Enrollments).HasForeignKey(x => x.StudentId),
+                j => j.HasOne(x => x.Course).WithMany(x => x.Enrollments).HasForeignKey(x => x.CourseId),
+                j =>
+                {
+                    j.HasKey(x => new { x.StudentId, x.CourseId });
+                });
+    }
+}
+```
+
+There is No change in migrations codes after Changed entity type configuration. [20211218051811_Change mtom]()
+
 ## Usages
 
 ### .net core 3.1
@@ -76,11 +107,49 @@ var students = await Context.Students
     });
 ```
 
+```csharp
+var enrollments = Context.Courses
+    .ToList()
+    .Where((_, index) => index < value)
+    .Select(x => new Enrollment
+    {
+        CourseId = x.Id,
+    });
+
+student.Enrollments
+    .AddRange(enrollments);
+```
+
 ### .NET 5
 
 No change
 
 ### .NET 6
+
+Can access course of student enrollment directly. Does not need to access through enrollments.
+
+```csharp
+var students = await Context.Students
+    .Include(x => x.Courses)
+    .Select(x => new
+    {
+        Name = x.Name,
+        Courses = x.Courses.Select(x => new
+        {
+            Title = x.Title,
+        }),
+    })
+```
+
+Also, can insert course of student directly. Does not need to access through enrollments.
+
+```csharp
+var coursesToEnroll = Context.Courses
+    .ToList()
+    .Where((_, index) => index < value);
+
+student.Courses.AddRange(coursesToEnroll);
+```
 
 ## Others
 
@@ -95,12 +164,20 @@ $ dotnet new tool-manifest
 Pelase see [nuget: dotnet-ef](https://www.nuget.org/packages/dotnet-ef/) versions tab.
 
 .net core 3.1
+
 ```bash
-$ $ dotnet tool install --local dotnet-ef --version 3.1.22
+$ dotnet tool install --local dotnet-ef --version 3.1.22
 ```
 .net 5
-```
+
+```bash
 $ dotnet tool update --local dotnet-ef --version 5.0.13
+```
+
+.net 6
+
+```bash
+$ dotnet tool update --local dotnet-ef --version 6.0.1
 ```
 
 ### Add migrations

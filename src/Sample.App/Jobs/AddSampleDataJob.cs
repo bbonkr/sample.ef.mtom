@@ -10,17 +10,17 @@ using Microsoft.Extensions.Logging;
 using Sample.Data;
 using Sample.Entities;
 
-namespace Sample.App.Jobs
-{
-    public class AddSampleDataJob : JobBase
-    {
-        public AddSampleDataJob(AppDbContext context, ILogger<AddSampleDataJob> logger) : base(context, logger)
-        {
-        }
+namespace Sample.App.Jobs;
 
-        public override async Task ExecuteAsync()
-        {
-            var studentNames = new List<string>
+public class AddSampleDataJob : JobBase
+{
+    public AddSampleDataJob(AppDbContext context, ILogger<AddSampleDataJob> logger) : base(context, logger)
+    {
+    }
+
+    public override async Task ExecuteAsync()
+    {
+        var studentNames = new List<string>
             {
                 "Brad",
                 "Jake",
@@ -29,7 +29,7 @@ namespace Sample.App.Jobs
                 "Tomas"
             };
 
-            var courseTitles = new List<string>
+        var courseTitles = new List<string>
             {
                 "History",
                 "Mathematics",
@@ -37,47 +37,58 @@ namespace Sample.App.Jobs
                 "Physics"
             };
 
-            var students = studentNames.Select((name) => new Student { Name = name });
-            var courses = courseTitles.Select((title) => new Course { Title = title });
+        var students = studentNames.Select((name) => new Student { Name = name });
+        var courses = courseTitles.Select((title) => new Course { Title = title });
 
-            using (var transaction = Context.Database.BeginTransaction())
+        using (var transaction = Context.Database.BeginTransaction())
+        {
+            try
             {
-                try
+                Context.Students.AddRange(students);
+                Context.Courses.AddRange(courses);
+
+                await Context.SaveChangesAsync();
+
+                Logger.LogInformation("Student: {student} rows added", students.Count());
+                Logger.LogInformation("Course: {course} rows added", students.Count());
+
+                var random = new Random();
+                // Enrollment row required
+                //foreach (var student in Context.Students.Include(x => x.Enrollments).ToList())
+                //{
+                //    var value = random.Next(1, courses.Count());
+
+                //    var enrollments = Context.Courses
+                //        .ToList()
+                //        .Where((_, index) => index < value)
+                //        .Select(x => new Enrollment
+                //        {
+                //            CourseId = x.Id,
+                //        });
+
+                //    student.Enrollments
+                //        .AddRange(enrollments);
+                //}
+
+                // Add courses of student directly. /-o-)/
+                foreach (var student in Context.Students.Include(x => x.Courses).ToList())
                 {
-                    Context.Students.AddRange(students);
-                    Context.Courses.AddRange(courses);
+                    var value = random.Next(1, courses.Count());
 
-                    await Context.SaveChangesAsync();
+                    var coursesToEnroll = Context.Courses
+                        .ToList()
+                        .Where((_, index) => index < value);
 
-                    Logger.LogInformation("Student: {student} rows added", students.Count());
-                    Logger.LogInformation("Course: {course} rows added", students.Count());
-
-                    var random = new Random();
-                    foreach (var student in Context.Students.Include(x=>x.Enrollments).ToList())
-                    {
-                        var value = random.Next(1, courses.Count());
-
-                        var enrollments = Context.Courses
-                            .ToList()
-                            .Where((_, index) => index < value)
-                            .Select(x => new Enrollment
-                            {
-                                CourseId = x.Id,
-                            });
-
-                        student.Enrollments
-                            .AddRange(enrollments);
-                    }
-
-
-                    await Context.SaveChangesAsync();
-
-                    await transaction.CommitAsync();
+                    student.Courses.AddRange(coursesToEnroll);
                 }
-                catch (Exception)
-                {
-                    await transaction.RollbackAsync();
-                }            
+
+                await Context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
             }
         }
     }

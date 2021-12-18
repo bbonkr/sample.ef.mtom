@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Sample.Data.SqlServer
-{
-    public class PlaceHolder
-    {
+namespace Sample.Data.SqlServer;
 
-    }
+public class PlaceHolder
+{
+
 }
