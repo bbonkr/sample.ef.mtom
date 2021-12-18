@@ -53,6 +53,8 @@ public class EnrollmentEntityTypeConfiguration : IEntityTypeConfiguration<Enroll
 
 ### .NET 5
 
+No change
+
 ### .NET 6
 
 ## Usages
@@ -76,10 +78,30 @@ var students = await Context.Students
 
 ### .NET 5
 
+No change
+
 ### .NET 6
 
 ## Others
 
+### dotnet-ef tool
+
+If install dotnet tool locally, make sure to create manifest file first.
+
+```bash
+$ dotnet new tool-manifest
+```
+
+Pelase see [nuget: dotnet-ef](https://www.nuget.org/packages/dotnet-ef/) versions tab.
+
+.net core 3.1
+```bash
+$ $ dotnet tool install --local dotnet-ef --version 3.1.22
+```
+.net 5
+```
+$ dotnet tool update --local dotnet-ef --version 5.0.13
+```
 
 ### Add migrations
 
