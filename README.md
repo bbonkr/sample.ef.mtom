@@ -86,7 +86,7 @@ public class CourseEntityTypeConfiguration : IEntityTypeConfiguration<Course>
 }
 ```
 
-There is No change in migrations codes after Changed entity type configuration. [20211218051811_Change mtom]()
+There is No change in migrations codes after Changed entity type configuration. [20211218051811_Change mtom](./blob/main/src/Sample.Data.SqlServer/Migrations/20211218051811_Change%20mtom.cs)
 
 ## Usages
 
