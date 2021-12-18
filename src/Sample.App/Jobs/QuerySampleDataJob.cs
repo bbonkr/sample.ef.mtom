@@ -19,13 +19,13 @@ public class QuerySampleDataJob : JobBase
     public override async Task ExecuteAsync()
     {
         var students = await Context.Students
-            .Include(x => x.Enrollments)
+            .Include(x => x.Courses)
             .Select(x => new
             {
                 Name = x.Name,
-                Courses = x.Enrollments.Select(x => new
+                Courses = x.Courses.Select(x => new
                 {
-                    Title = x.Course.Title,
+                    Title = x.Title,
                 }),
             }).ToListAsync();
 
