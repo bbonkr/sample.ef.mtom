@@ -53,6 +53,8 @@ public class EnrollmentEntityTypeConfiguration : IEntityTypeConfiguration<Enroll
 
 ### .NET 5
 
+No change
+
 ### .NET 6
 
 ## Usages
@@ -75,6 +77,8 @@ var students = await Context.Students
 ```
 
 ### .NET 5
+
+No change
 
 ### .NET 6
 
