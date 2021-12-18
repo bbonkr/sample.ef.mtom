@@ -95,12 +95,20 @@ $ dotnet new tool-manifest
 Pelase see [nuget: dotnet-ef](https://www.nuget.org/packages/dotnet-ef/) versions tab.
 
 .net core 3.1
+
 ```bash
-$ $ dotnet tool install --local dotnet-ef --version 3.1.22
+$ dotnet tool install --local dotnet-ef --version 3.1.22
 ```
 .net 5
-```
+
+```bash
 $ dotnet tool update --local dotnet-ef --version 5.0.13
+```
+
+.net 6
+
+```bash
+$ dotnet tool update --local dotnet-ef --version 6.0.1
 ```
 
 ### Add migrations
