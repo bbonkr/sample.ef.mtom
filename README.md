@@ -57,6 +57,35 @@ No change
 
 ### .NET 6
 
+Remove EnrollmentEntityTypeConfiguration class, configure in course entity type configuration
+
+```csharp
+public class CourseEntityTypeConfiguration : IEntityTypeConfiguration<Course>
+{
+    public void Configure(EntityTypeBuilder<Course> builder)
+    {
+        builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.Id)
+            .IsRequired()
+            .ValueGeneratedOnAdd();
+
+        builder.Property(x => x.Title)
+            .IsRequired();
+
+        builder.HasMany(x => x.Students)
+            .WithMany(x => x.Courses)
+            .UsingEntity<Enrollment>(
+                j => j.HasOne(x => x.Student).WithMany(x => x.Enrollments).HasForeignKey(x => x.StudentId),
+                j => j.HasOne(x => x.Course).WithMany(x => x.Enrollments).HasForeignKey(x => x.CourseId),
+                j =>
+                {
+                    j.HasKey(x => new { x.StudentId, x.CourseId });
+                });
+    }
+}
+```
+
 ## Usages
 
 ### .net core 3.1

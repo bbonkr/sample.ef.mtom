@@ -12,5 +12,7 @@ namespace Sample.Entities
         public string Title { get; set; }
 
         public virtual List<Enrollment> Enrollments { get; set; }
+
+        public virtual List<Student> Students { get; set; }
     }
 }
