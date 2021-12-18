@@ -97,12 +97,12 @@ Get student and their enrolled courses
 ```csharp
 var students = await Context.Students
     .Include(x => x.Enrollments)
-    .Select(x => new
+    .Select(student => new
     {
-        Name = x.Name,
-        Courses = x.Enrollments.Select(x => new
+        Name = student.Name,
+        Courses = x.Enrollments.Select(enrollment => new
         {
-            Title = x.Course.Title,
+            Title = enrollment.Course.Title,
         }),
     });
 ```
@@ -131,12 +131,12 @@ Can access course of student enrollment directly. Does not need to access throug
 ```csharp
 var students = await Context.Students
     .Include(x => x.Courses)
-    .Select(x => new
+    .Select(student => new
     {
-        Name = x.Name,
-        Courses = x.Courses.Select(x => new
+        Name = student.Name,
+        Courses = student.Courses.Select(course => new
         {
-            Title = x.Title,
+            Title = course.Title,
         }),
     })
 ```
