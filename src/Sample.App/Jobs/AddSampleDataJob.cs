@@ -53,22 +53,6 @@ public class AddSampleDataJob : JobBase
                 Logger.LogInformation("Course: {course} rows added", students.Count());
 
                 var random = new Random();
-                // Enrollment row required
-                //foreach (var student in Context.Students.Include(x => x.Enrollments).ToList())
-                //{
-                //    var value = random.Next(1, courses.Count());
-
-                //    var enrollments = Context.Courses
-                //        .ToList()
-                //        .Where((_, index) => index < value)
-                //        .Select(x => new Enrollment
-                //        {
-                //            CourseId = x.Id,
-                //        });
-
-                //    student.Enrollments
-                //        .AddRange(enrollments);
-                //}
 
                 // Add courses of student directly. /-o-)/
                 foreach (var student in Context.Students.Include(x => x.Courses).ToList())
